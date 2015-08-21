@@ -13,7 +13,7 @@ def main():
 	pattern = re.compile(r'\{(.+?)\}')
 	for s in snt:
 		if not pattern.search(u''.join(s)):
-			print 'Delete Sentence:"%s"' %u' '.join(s)
+			# print 'Delete Sentence:"%s"' %u' '.join(s)
 			snt.remove(s)
 
 	V = []		#全フレーム中の語彙の異なり総数(ex dobj:you)
@@ -55,7 +55,7 @@ def main():
 			for k, l in C.items():
 				if i in l:			#viを所属クラスタC[k]から削除
 					l.remove(i)
-			print 'snt[%d]'%i, C
+			# print 'snt[%d]'%i, C
 			C_index = [k for k, l in C.items() if not l == []]
 			new_i = random.choice(list(set(range(len(snt))) - set(C_index)))
 			C_index.append(new_i)
@@ -71,14 +71,14 @@ def main():
 					P_like = 0
 					for w in V:
 						if w in V_snt[i]:
-							print w, j, C[j]
+							# print w, j, C[j]
 							count_f_w, count_f_t = 0, 0
 							for snt_i in C[j]:
 								if V_snt[snt_i].has_key(w):
 									count_f_w += V_snt[snt_i][w]
 								count_f_t += sum(V_snt[snt_i].values())
 							# if count_f_w != 0:
-							print count_f_w, count_f_t
+							# print count_f_w, count_f_t
 							log_Aw = log(count_f_w + beta)
 							log_Bw = log(count_f_t + len(V)*beta)
 							P_like += V_snt[i][w]*(log_Aw - log_Bw)
@@ -88,7 +88,7 @@ def main():
 				log_pst = P_prior + P_like
 				P[j] = e**log_pst
 			# if i == 1:
-			pprint.pprint(P)
+			# pprint.pprint(P)
 
 			rand =  random.uniform(0, sum(P.values()))
 			total = 0
@@ -97,19 +97,20 @@ def main():
 				total += p
 				if total > rand:
 					# if i == 1:
-					print rand
-					print 'add Cluster -> %d' %c_index
+					# print rand
+					# print 'add Cluster -> %d' %c_index
 					C[c_index].append(i)
 					if I > 50:
 						F[i][c_index] += 1
-						print pp(F)
+						#  pp(F)
 					break
 				# index += 1
 
 	Result_Class = defaultdict(list)
 	for index, cnt in enumerate(F):
 		Result_Class[cnt.most_common(1)[0][0]].append('snt#%d' %index)
-	print dict(Result_Class)
+	print "number of class: " ,len(Result_Class)
+	print Result_Class
 
 
 import re, pprint

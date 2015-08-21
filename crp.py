@@ -4,7 +4,7 @@
 import codecs,sys,numpy,pprint,re,random
 sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
 from math import *
-from collections import defaultdict, Counter
+from collections import defaultdict#, Counter
 
 def main():
 	with codecs.open('result/eat_test.input', 'r', 'utf-8') as f:
@@ -19,7 +19,8 @@ def main():
 	V = []		#全フレーム中の語彙の異なり総数(ex dobj:you)
 	V_snt = []	#各フレームごとの語彙異なり語と頻度リスト	(ex [[{'dobj:you':25},{}..],[]...])
 	C = defaultdict(list)		#各フレームｖと所属するクラスタCを対応付け
-	F = [Counter() for i in range(len(snt))]
+	# F = [Counter() for i in range(len(snt))]
+	F = [{} for i in range(len(snt))]	#python2.6ではCounterがないので…
 
 	for v in snt:
 		snt_temp = {}
@@ -101,16 +102,24 @@ def main():
 					# print 'add Cluster -> %d' %c_index
 					C[c_index].append(i)
 					if I > 50:
-						F[i][c_index] += 1
+						if F[i].has_key(c_index):
+							F[i][c_index] += 1
+						else:
+							F[i][c_index] = 1
 						#  pp(F)
 					break
 				# index += 1
 
 	Result_Class = defaultdict(list)
 	for index, cnt in enumerate(F):
-		Result_Class[cnt.most_common(1)[0][0]].append('snt#%d' %index)
+		# Result_Class[cnt.most_common(1)[0][0]].append('snt#%d' %index)
+		Result_Class[most_commom_indict(cnt)].append('snt#%d' %index)
+
 	print "number of class: " ,len(Result_Class)
 	print Result_Class
+
+def most_commom_indict(dic):
+	return sorted(dic.iteritems(), key=lambda x: x[1], reverse=True)[0][0]
 
 
 import re, pprint

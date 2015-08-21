@@ -1,0 +1,5 @@
+eat//<dobj>:{bread:30, sushi:20, onigiri:15, my:4}//prep_at{restaurant:15, cafe:12, house:10}
+eat//<dobj>:{sushi:20, my:5, John:3, bread:20}
+eat//to//<xsubj>:{they:30, one:25}
+eat//<prep_as>:{et:15, matter:10, history:11, decade:5, source:3}
+eat//<dobj>:{source:5, sandwitch:5, onigiri:5, bread:10}//prep_at{cafe:20, picnic:5, restaurant:10}

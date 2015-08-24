@@ -6,8 +6,10 @@ sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
 from math import *
 from collections import defaultdict#, Counter
 
+FLOAT_MIN = 2.2250738585072014e-308
+
 def main():
-	with codecs.open('result/eat_test.input', 'r', 'utf-8') as f:
+	with codecs.open('result/observe.full.txt', 'r', 'utf-8') as f:
 		snt = [x.strip().split(u'//') for x in f.readlines()]
 
 	pattern = re.compile(r'\{(.+?)\}')
@@ -39,7 +41,7 @@ def main():
 				v[i] = temp
 		V_snt.append(snt_temp)
 
-	# pprint.pprint(V_snt)
+	print 'INPUT Sentences:', len(V_snt)
 	V = list(set(V))
 	# for i in range(len(snt)):
 	# 	C[i] = []
@@ -49,7 +51,7 @@ def main():
 		C[random.randint(0, len(snt)-1)].append(i)
 
 	alpha = 1	#αとβの値を決定
-	beta = 20
+	beta = 1
 
 	for I in range(150):
 		for i, n in enumerate(snt):
@@ -60,14 +62,13 @@ def main():
 			C_index = [k for k, l in C.items() if not l == []]
 			new_i = random.choice(list(set(range(len(snt))) - set(C_index)))
 			C_index.append(new_i)
-
+			# print new_i, C_index
 			P = {}
 			for j in C_index:
 				if j == new_i:
 					P_w_f = beta - log(len(V))*beta
 					P_like = P_w_f * (len(n) - 1)
 					P_prior = log(alpha) - log(len(snt) + alpha)
-
 				else:
 					P_like = 0
 					for w in V:
@@ -85,11 +86,10 @@ def main():
 							P_like += V_snt[i][w]*(log_Aw - log_Bw)
 
 					P_prior = log(len(C[j])) - log(len(snt) + alpha)
-
 				log_pst = P_prior + P_like
 				P[j] = e**log_pst
-			# if i == 1:
-			# pprint.pprint(P)
+				if P[j] == 0.0:
+					P[j] = FLOAT_MIN
 
 			rand =  random.uniform(0, sum(P.values()))
 			total = 0
@@ -106,7 +106,6 @@ def main():
 							F[i][c_index] += 1
 						else:
 							F[i][c_index] = 1
-						#  pp(F)
 					break
 				# index += 1
 

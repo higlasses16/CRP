@@ -3,13 +3,18 @@
 # Python2.X encoding wrapper
 import codecs,sys,numpy,pprint,re,random
 sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
-from math import *
+from math import log10
 from collections import defaultdict#, Counter
 
-FLOAT_MIN = 2.2250738585072014e-308
+FLOAT_MIN = 2.2250738585072014
+FLOAT_10EXP_MIN = -308.0
+FLOAT_MAX = 1.7976931348623157
+FLOAT_10EXP_MAX = 308.0
+
+
 
 def main():
-	with codecs.open('result/observe.full.txt', 'r', 'utf-8') as f:
+	with codecs.open('result/test.input.txt', 'r', 'utf-8') as f:
 		snt = [x.strip().split(u'//') for x in f.readlines()]
 
 	pattern = re.compile(r'\{(.+?)\}')
@@ -51,14 +56,14 @@ def main():
 		C[random.randint(0, len(snt)-1)].append(i)
 
 	alpha = 1	#αとβの値を決定
-	beta = 1
+	beta = 20
 
-	for I in range(150):
+	for I in range(100):
 		for i, n in enumerate(snt):
 			for k, l in C.items():
 				if i in l:			#viを所属クラスタC[k]から削除
 					l.remove(i)
-			# print 'snt[%d]'%i, C
+			print 'snt[%d]'%i, C
 			C_index = [k for k, l in C.items() if not l == []]
 			new_i = random.choice(list(set(range(len(snt))) - set(C_index)))
 			C_index.append(new_i)
@@ -66,9 +71,9 @@ def main():
 			P = {}
 			for j in C_index:
 				if j == new_i:
-					P_w_f = beta - log(len(V))*beta
+					P_w_f = beta - log10(len(V))*beta
 					P_like = P_w_f * (len(n) - 1)
-					P_prior = log(alpha) - log(len(snt) + alpha)
+					P_prior = log10(alpha) - log10(len(snt) + alpha)
 				else:
 					P_like = 0
 					for w in V:
@@ -81,15 +86,24 @@ def main():
 								count_f_t += sum(V_snt[snt_i].values())
 							# if count_f_w != 0:
 							# print count_f_w, count_f_t
-							log_Aw = log(count_f_w + beta)
-							log_Bw = log(count_f_t + len(V)*beta)
+							log_Aw = log10(count_f_w + beta)
+							log_Bw = log10(count_f_t + len(V)*beta)
 							P_like += V_snt[i][w]*(log_Aw - log_Bw)
 
-					P_prior = log(len(C[j])) - log(len(snt) + alpha)
+					P_prior = log10(len(C[j])) - log10(len(snt) + alpha)
 				log_pst = P_prior + P_like
-				P[j] = e**log_pst
-				if P[j] == 0.0:
-					P[j] = FLOAT_MIN
+				P[j] = log_pst
+				# if P[j] == 0.0:
+					# P[j] = FLOAT_MIN
+			print pp(P)
+
+			plus_exp = -(min(P.values()) - FLOAT_10EXP_MIN)
+			# plus_exp = - (sum(P.values()) / len(P))
+			print plus_exp
+			for index, p in P.items():
+				temp_logp = P[index] + plus_exp
+				P[index] = 10**temp_logp
+				print P[index]
 
 			rand =  random.uniform(0, sum(P.values()))
 			total = 0
@@ -98,8 +112,8 @@ def main():
 				total += p
 				if total > rand:
 					# if i == 1:
-					# print rand
-					# print 'add Cluster -> %d' %c_index
+					print rand
+					print 'add Cluster -> %d' %c_index
 					C[c_index].append(i)
 					if I > 50:
 						if F[i].has_key(c_index):

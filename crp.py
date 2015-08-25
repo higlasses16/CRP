@@ -56,9 +56,9 @@ def main():
 		C[random.randint(0, len(snt)-1)].append(i)
 
 	alpha = 1	#αとβの値を決定
-	beta = 20
+	beta = 10
 
-	for I in range(100):
+	for I in range(150):
 		for i, n in enumerate(snt):
 			for k, l in C.items():
 				if i in l:			#viを所属クラスタC[k]から削除
@@ -97,12 +97,17 @@ def main():
 					# P[j] = FLOAT_MIN
 			# print pp(P)
 
-			plus_exp = -(min(P.values()) - FLOAT_10EXP_MIN)
+			# plus_exp = -(min(P.values()) - FLOAT_10EXP_MIN)
 			# plus_exp = - (sum(P.values()) / len(P))
 			# print plus_exp
+			p_max, p_min = max(P.values()), min(P.values())
 			for index, p in P.items():
-				temp_logp = P[index] + plus_exp
-				P[index] = 10**temp_logp
+				# temp_logp = P[index] + plus_exp
+				if p_min < FLOAT_10EXP_MIN:
+					temp_logp = (p - p_min) / (p_max - p_min) - 1
+					P[index] = 10**((temp_logp*(FLOAT_10EXP_MAX + p_max)) + p_max)
+				else:
+					P[index] = 10**p
 				# print P[index]
 
 			rand =  random.uniform(0, sum(P.values()))

@@ -63,7 +63,7 @@ def main():
 			for k, l in C.items():
 				if i in l:			#viを所属クラスタC[k]から削除
 					l.remove(i)
-			print 'snt[%d]'%i, C
+			# print 'snt[%d]'%i, C
 			C_index = [k for k, l in C.items() if not l == []]
 			new_i = random.choice(list(set(range(len(snt))) - set(C_index)))
 			C_index.append(new_i)
@@ -95,15 +95,15 @@ def main():
 				P[j] = log_pst
 				# if P[j] == 0.0:
 					# P[j] = FLOAT_MIN
-			print pp(P)
+			# print pp(P)
 
 			plus_exp = -(min(P.values()) - FLOAT_10EXP_MIN)
 			# plus_exp = - (sum(P.values()) / len(P))
-			print plus_exp
+			# print plus_exp
 			for index, p in P.items():
 				temp_logp = P[index] + plus_exp
 				P[index] = 10**temp_logp
-				print P[index]
+				# print P[index]
 
 			rand =  random.uniform(0, sum(P.values()))
 			total = 0
@@ -112,8 +112,8 @@ def main():
 				total += p
 				if total > rand:
 					# if i == 1:
-					print rand
-					print 'add Cluster -> %d' %c_index
+					# print rand
+					# print 'add Cluster -> %d' %c_index
 					C[c_index].append(i)
 					if I > 50:
 						if F[i].has_key(c_index):
